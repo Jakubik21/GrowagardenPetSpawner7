@@ -1,0 +1,78 @@
+-- Grow a Garden - Dark Pet Spawner GUI (lokalny, wykrywa modele petów)
+local petList = {
+    "Snail", "Moon Cat", "Blood Hedgehog", "Hedgehog", "Polar Bear", "Dragonfly", "Chicken Zombie", "Bee", "Honey Bee",
+    "Petal Bee", "Queen Bee", "Wasp", "Tarantula Hawk", "Bear Bee", "Cooked Owl", "Butterfly", "Disco Bee", "Sea Turtle",
+    "Scarlet Macaw", "Blood Owl", "Owl", "Night Owl", "Blood Kiwi", "Chicken", "Kiwi", "Bald Eagle", "Mole", "Golden Lab",
+    "Panda", "Bunny", "Ghost Chicken", "Penguin", "Arctic Fox", "Phoenix", "Golden Bee", "Firefly", "Fire Ant",
+    "Fire Hedgehog", "Fire Owl", "Zombie Bee", "Snowy Owl", "Ice Dragonfly", "Rainbow Hedgehog", "Rainbow Owl",
+    "Poison Frog", "Leaf Bug", "Giant Snail", "Golden Snail", "Lava Turtle", "Storm Owl", "Venus Bee", "Metal Bee",
+    "Platinum Bee", "Disco Mole", "Crystal Snail", "Radiant Butterfly", "Obsidian Turtle", "Festive Penguin",
+    "Cupid Bee", "Vampire Hedgehog", "Neon Snail", "Shadow Owl", "Golden Kiwi", "Emerald Mole", "Pumpkin Cat",
+    "Star Bee", "Glitch Cat", "Cyber Bee", "Pixel Hedgehog", "AI Owl", "Lunar Moth", "Sunflower Bee", "Corrupted Snail",
+    "Ice Cream Mole", "Candy Owl", "Cotton Bunny", "Void Cat", "Reaper Bee", "Toxic Slug", "Prism Bee"
+}
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+gui.Name = "DarkPetSpawner"
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 400, 0, 350)
+frame.Position = UDim2.new(0.5, -200, 0.5, -175)
+frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0, 40)
+title.BackgroundTransparency = 1
+title.Text = "🌑 Grow a Garden | Pet Spawner"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextScaled = true
+
+local listFrame = Instance.new("ScrollingFrame", frame)
+listFrame.Size = UDim2.new(1, -20, 1, -60)
+listFrame.Position = UDim2.new(0, 10, 0, 50)
+listFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+listFrame.BorderSizePixel = 0
+listFrame.CanvasSize = UDim2.new(0, 0, 0, #petList * 30)
+listFrame.ScrollBarThickness = 6
+
+for i, petName in ipairs(petList) do
+    local btn = Instance.new("TextButton", listFrame)
+    btn.Size = UDim2.new(1, 0, 0, 30)
+    btn.Position = UDim2.new(0, 0, 0, (i - 1) * 30)
+    btn.Text = petName
+    btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.Gotham
+    btn.TextScaled = true
+
+    btn.MouseButton1Click:Connect(function()
+        local sources = {
+            game.ReplicatedStorage,
+            game.Workspace,
+            game.Lighting,
+            game:GetService("StarterPack")
+        }
+
+        local found = nil
+        for _, src in ipairs(sources) do
+            if src:FindFirstChild(petName) then
+                found = src[petName]:Clone()
+                break
+            end
+        end
+
+        if found then
+            found.Parent = workspace
+            found:SetPrimaryPartCFrame(character:GetPrimaryPartCFrame() * CFrame.new(2, 0, 2))
+        else
+            warn("Nie znaleziono modelu peta: " .. petName)
+        end
+    end)
+end
